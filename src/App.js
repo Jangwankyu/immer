@@ -1,5 +1,12 @@
 import { useRef, useState, useCallback } from 'react';
+import { produce } from 'immer';
 
+
+/*
+    yarn add immer
+
+
+*/
 
 function App() {
 
@@ -14,7 +21,15 @@ function App() {
     const onChange = useCallback(
         e=> {
             const{name, value} = e.target;
-            setForm({ ...form, [name] : [value]}); 
+
+            // not immer
+            //setForm({ ...form, [name] : [value]}); 
+
+            setForm(
+                produce(form, draft => {
+                    draft[name] = value;
+                })
+            );
         },
         [form]
     );
@@ -31,10 +46,15 @@ function App() {
             };
 
             //array에 새 항목 등록
-            setData({
-                ...data,
-                array : data.array.concat(info)
-            });
+            // not immer
+            // setData({ ...data, array : data.array.concat(info) });
+
+            setData(
+                produce(data, draft => {
+                    draft.array.push(info);
+                })
+            );
+
 
             // form 초기화
             setForm({
@@ -50,11 +70,15 @@ function App() {
     const onRemove = useCallback(
 
         id => {
-            alert('id : ' + id);
-            setData({
-                ...data,
-                array:data.array.filter(info => info.id !== id)
-            });
+            //alert('id : ' + id);
+            // not immer
+            //setData({...data, array:data.array.filter(info => info.id !== id)});
+
+            setData(
+                produce( data, draft => {
+                    draft.array.splice(draft.array.findIndex(info => info.id === id), 1);
+                })
+            );
         },
         [data]
     );
